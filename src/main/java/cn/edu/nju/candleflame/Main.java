@@ -16,7 +16,7 @@ import java.util.List;
 public class Main {
 
 	public static void main(String[] args) throws FileNotFoundException {
-		File file = new File("/Users/liweimin/Documents/code/workflow/src/main/resources/Model1.pnml");
+		File file = new File("/Users/liweimin/Documents/code/workflow/src/main/resources/M1-complete.pnml");
 		if (!file.exists()){
 			throw new FileNotFoundException();
 		}

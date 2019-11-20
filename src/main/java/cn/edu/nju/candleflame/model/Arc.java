@@ -2,19 +2,21 @@ package cn.edu.nju.candleflame.model;
 
 import cn.edu.nju.candleflame.exception.XMLParseException;
 import cn.edu.nju.candleflame.model.inner.ArcToolSpecific;
+import lombok.Data;
 import org.dom4j.Element;
 
+@Data
 public class Arc {
 
 	private String id;
 
 	/**
-	 * from node
+	 * from id
 	 */
 	private String source;
 
 	/**
-	 * target node
+	 * target id
 	 */
 	private String target;
 	private ArcToolSpecific arcToolSpecific;

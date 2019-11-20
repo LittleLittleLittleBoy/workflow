@@ -1,4 +1,4 @@
-package cn.edu.nju.candleflame.model.util;
+package cn.edu.nju.candleflame.util;
 
 import cn.edu.nju.candleflame.exception.XMLParseException;
 import cn.edu.nju.candleflame.model.Net;

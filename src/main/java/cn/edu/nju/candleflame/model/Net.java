@@ -1,12 +1,14 @@
 package cn.edu.nju.candleflame.model;
 
 import cn.edu.nju.candleflame.exception.XMLParseException;
+import lombok.Data;
 import org.dom4j.Element;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@Data
 public class Net {
 
 	private String id;

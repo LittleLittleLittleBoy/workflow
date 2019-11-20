@@ -1,7 +1,7 @@
 package cn.edu.nju.candleflame;
 
 import cn.edu.nju.candleflame.model.Net;
-import cn.edu.nju.candleflame.model.util.Parser;
+import cn.edu.nju.candleflame.util.Parser;
 
 import java.io.FileNotFoundException;
 import java.util.List;

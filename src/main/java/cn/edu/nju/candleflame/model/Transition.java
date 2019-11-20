@@ -1,12 +1,14 @@
 package cn.edu.nju.candleflame.model;
 
+import cn.edu.nju.candleflame.model.inner.Graphics;
+import cn.edu.nju.candleflame.model.inner.TransitionToolSpecific;
 import org.dom4j.Element;
 
 public class Transition {
 
 	private String id;
 
-	private Name name;
+	private String name;
 
 	private Graphics graphics;
 
@@ -15,7 +17,7 @@ public class Transition {
 	public Transition(Element transitionNode) {
 		this.id = transitionNode.attributeValue("id");
 
-		this.name = new Name(transitionNode.element("name"));
+		this.name = transitionNode.element("name").getText();
 		this.graphics = new Graphics(transitionNode.element("graphics"));
 		this.transitionToolSpecific = new TransitionToolSpecific(transitionNode.element("toolspecific"));
 	}

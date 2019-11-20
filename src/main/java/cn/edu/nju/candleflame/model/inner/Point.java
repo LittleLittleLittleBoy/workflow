@@ -1,4 +1,4 @@
-package cn.edu.nju.candleflame.model;
+package cn.edu.nju.candleflame.model.inner;
 
 import org.dom4j.Element;
 

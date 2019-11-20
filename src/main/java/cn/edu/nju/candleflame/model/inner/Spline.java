@@ -1,4 +1,4 @@
-package cn.edu.nju.candleflame.model;
+package cn.edu.nju.candleflame.model.inner;
 
 import cn.edu.nju.candleflame.exception.XMLParseException;
 import org.dom4j.Element;

@@ -1,18 +1,19 @@
 package cn.edu.nju.candleflame.model;
 
+import cn.edu.nju.candleflame.model.inner.Graphics;
 import org.dom4j.Element;
 
 public class Place {
 
 	private String id;
 
-	private Name name;
+	private String name;
 
 	private Graphics graphics;
 
 	public Place(Element placeNode){
 		this.id = placeNode.attributeValue("id");
 		this.graphics = new Graphics(placeNode.element("graphics"));
-		this.name = new Name(placeNode.element("name"));
+		this.name = placeNode.element("name").getText();
 	}
 }

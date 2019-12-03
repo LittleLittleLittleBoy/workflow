@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<pnml>
+<net id="workflownet" type="http://www.informatik.hu-berlin.de/top/pnml/basicPNML.rng">
+    <place id="place_1">
+        <name>
+            <text>p6</text>
+         </name>
+    </place>
+    <place id="place_2">
+        <name>
+            <text>p6</text>
+         </name>
+    </place>
+    <place id="place_3">
+        <name>
+            <text>p6</text>
+         </name>
+    </place>
+    <place id="place_4">
+        <name>
+            <text>p6</text>
+         </name>
+    </place>
+    <place id="place_5">
+        <name>
+            <text>p6</text>
+         </name>
+    </place>
+    <place id="place_6">
+        <name>
+            <text>p6</text>
+         </name>
+    </place>
+    <transition id="trans_1">
+        <name>
+            <text>1</text>
+         </name>
+    </transition>
+    <transition id="trans_2">
+        <name>
+            <text>2</text>
+         </name>
+    </transition>
+    <transition id="trans_3">
+        <name>
+            <text>3</text>
+         </name>
+    </transition>
+    <transition id="trans_4">
+        <name>
+            <text>4</text>
+         </name>
+    </transition>
+    <transition id="trans_5">
+        <name>
+            <text>5</text>
+         </name>
+    </transition>
+    <transition id="trans_6">
+        <name>
+            <text>6</text>
+         </name>
+    </transition>
+    <arc id="arc_0" source="place_1" target="trans_1"></arc>
+    <arc id="arc_1" source="place_1" target="trans_4"></arc>
+    <arc id="arc_1" source="trans_1" target="place_2"></arc>
+    <arc id="arc_2" source="trans_4" target="place_3"></arc>
+    <arc id="arc_0" source="place_2" target="trans_2"></arc>
+    <arc id="arc_1" source="place_2" target="trans_6"></arc>
+    <arc id="arc_0" source="place_3" target="trans_3"></arc>
+    <arc id="arc_1" source="place_3" target="trans_5"></arc>
+    <arc id="arc_1" source="trans_2" target="place_4"></arc>
+    <arc id="arc_2" source="trans_5" target="place_5"></arc>
+        <arc id="arc_0" source="place_4" target="trans_3"></arc>
+        <arc id="arc_1" source="place_5" target="trans_6"></arc>
+            <arc id="arc_1" source="trans_3" target="place_6"></arc>
+            <arc id="arc_2" source="trans_6" target="place_6"></arc>
+</net>
+</pnml>

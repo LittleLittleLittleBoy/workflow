@@ -69,21 +69,21 @@ public class Solution {
 	private static Map<String, Set<String>> connectMap = new HashMap<>();
 
 	public static void main(String[] args) {
-		getLogOfModel("/Users/liweimin/Documents/code/workflow/src/main/resources/Model1.pnml", "");
+//		getLogOfModel("/Users/liweimin/Documents/code/workflow/src/main/resources/Model1.pnml", "");
 
 		// 测试C(a,b)方法
 //		List<List<Integer>> lists = caculateIndex(2, 0, 4);
 //		lists.forEach(list -> System.out.println(String.join(" ", list+"")));
 		// 测试pathParallel 方法
-//		List<List<String>> path1= new ArrayList<>();
-//		path1.add(Stream.of("a","b").collect(Collectors.toList()));
-//		path1.add(Stream.of("c","d").collect(Collectors.toList()));
-//		List<List<String>> path2= new ArrayList<>();
-//		path2.add(Stream.of("e","f").collect(Collectors.toList()));
-//		path2.add(Stream.of("g","h").collect(Collectors.toList()));
-//		List<List<String>> lists = pathAppend(path1, path2);
-//		System.out.println(lists.size());
-//		lists.forEach(list -> System.out.println(String.join(" ", list)));
+		List<List<String>> path1= new ArrayList<>();
+		path1.add(Stream.of("a","b").collect(Collectors.toList()));
+		path1.add(Stream.of("c","d").collect(Collectors.toList()));
+		List<List<String>> path2= new ArrayList<>();
+		path2.add(Stream.of("e","f").collect(Collectors.toList()));
+		path2.add(Stream.of("g","h").collect(Collectors.toList()));
+		List<List<String>> lists = pathParallel(path1, path2);
+		System.out.println(lists.size());
+		lists.forEach(list -> System.out.println(String.join(" ", list)));
 	}
 
 	public static void getLogOfModel(String modelFile, String logFile){

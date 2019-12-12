@@ -18,195 +18,101 @@ enum NodeType{
 class Node{
 	NodeType type;
 	String id;
-	List<List<String>> path; // 节点包含的路径
+	String name;
 
 	public Node(Element element, NodeType nodeType){
 		switch (nodeType){
 			case PLACE:
 				type = NodeType.PLACE;
 				id = element.attributeValue("id");
-				path = new ArrayList<>();
 				break;
 			case TRANSITION:
 				type = NodeType.TRANSITION;
 				id = element.attributeValue("id");
-				path = new ArrayList<>();
-				path.add(Stream.of(element.element("name").element("text").getText()).collect(Collectors.toList()));
+				name = element.element("name").element("text").getText();
 				break;
 		}
 	}
 }
-class SubSystem{
-	String startNode;
-	String endNode;
-}
-class ParalleResult{
-	String transitionId;
-	String endPlaceId;
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof ParalleResult)) return false;
-		ParalleResult that = (ParalleResult) o;
-		return Objects.equals(transitionId, that.transitionId) &&
-				Objects.equals(endPlaceId, that.endPlaceId);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(transitionId, endPlaceId);
-	}
-
-	public ParalleResult(String transitionId, String endPlaceId) {
-		this.transitionId = transitionId;
-		this.endPlaceId = endPlaceId;
-	}
-}
 public class Solution {
 
+	// 所有节点的集合
 	private static Map<String, Node> nameNodeMap= new HashMap<>();
+
+	// 保存可达图状态与place名字的对应关系
+	private static Map<String, Integer> nameIndexMap = new HashMap<>();
+	private static String[] nodeNames;
+
+	// 所有的连接线
 	private static Map<String, Set<String>> connectMap = new HashMap<>();
+	// 所有的被连接线
+	private static Map<String, Set<String>> beConnectMap = new HashMap<>();
+
+	// 最终的路径集合
+	private static Set<String> finalPath = new HashSet<>();
+	// 开始状态
+	private static boolean[] start;
+	// 结束状态
+	private static boolean[] end;
 
 	public static void main(String[] args) {
-//		getLogOfModel("/Users/liweimin/Documents/code/workflow/src/main/resources/Model1.pnml", "");
-
-		// 测试C(a,b)方法
-//		List<List<Integer>> lists = caculateIndex(2, 0, 4);
-//		lists.forEach(list -> System.out.println(String.join(" ", list+"")));
-		// 测试pathParallel 方法
-		List<List<String>> path1= new ArrayList<>();
-		path1.add(Stream.of("a","b").collect(Collectors.toList()));
-		path1.add(Stream.of("c","d").collect(Collectors.toList()));
-		List<List<String>> path2= new ArrayList<>();
-		path2.add(Stream.of("e","f").collect(Collectors.toList()));
-		path2.add(Stream.of("g","h").collect(Collectors.toList()));
-		List<List<String>> lists = pathParallel(path1, path2);
-		System.out.println(lists.size());
-		lists.forEach(list -> System.out.println(String.join(" ", list)));
+		getLogOfModel("/Users/liweimin/Documents/code/workflow/src/main/resources/Model3.pnml", "");
 	}
+
 
 	public static void getLogOfModel(String modelFile, String logFile){
 		// 解析文件
-		SubSystem subSystem = parseFile(modelFile);
-
-		//处理并行结构
-		removeParallel();
-
-		List<List<String>> allPath = parseSubSystem(subSystem);
-
-		allPath.forEach(list -> System.out.println(String.join(" ", list)));
+		parseFile(modelFile);
+		dfs(start,"");
+		finalPath.forEach(i-> System.out.println(i));
+		System.out.println(finalPath.size());
 	}
 
-	private static void removeParallel() {
-		Set<String> transitionSet = nameNodeMap.values().stream().filter(i -> i.type == NodeType.TRANSITION).map(i->i.id).collect(Collectors.toSet());
-
-		Set<String> beginTransitionSet = connectMap.keySet().stream().filter(i -> transitionSet.contains(i) && connectMap.get(i).size() > 1).collect(Collectors.toSet());
-		Map<String,Integer> countMap = new HashMap<>();
-		for (Set<String> value: connectMap.values()){
-			for (String id: value){
-				countMap.put(id,countMap.getOrDefault(id,0)+1);
-			}
+	public static void dfs(boolean[] currentState, String visitedPath){
+		if (Arrays.equals(currentState, end)){
+			finalPath.add(visitedPath);
+			return;
 		}
-
-		while (!beginTransitionSet.isEmpty()){
-			for (String nodeId : beginTransitionSet){
-				Set<String> strings = connectMap.get(nodeId);
-				for (String placeId:strings){
-					Set<String> endTransitionSet = connectMap.keySet().stream().filter(i -> connectMap.get(i).size() > 1).collect(Collectors.toSet());
-					Set<ParalleResult> results = parallelDFS(placeId, endTransitionSet, new HashSet<String>());
-
-				}
-			}
-		}
-
-	}
-
-	private static Set<ParalleResult> parallelDFS(String nodeId, Set<String> endTransitionSet, HashSet<String> visited) {
-		Set<String> nextNodes = connectMap.get(nodeId);
-		Node node = nameNodeMap.get(nodeId);
-		if (node.type == NodeType.PLACE){
-			if (visited.contains(nodeId)){
-				return new HashSet<>();
-			}
-			for (String nextNode: nextNodes){
-				if (endTransitionSet.contains(nextNode)){
-					return Stream.of(new ParalleResult(nextNode,nodeId)).collect(Collectors.toSet());
-				}else{
-					parallelDFS(nextNode, endTransitionSet, visited);
-				}
-			}
-		}else {
-			Set<ParalleResult> results = new HashSet<>();
-			for (String nextNode : nextNodes){
-				Set<ParalleResult> paralleResults = parallelDFS(nextNode, endTransitionSet, visited);
-				results.addAll(paralleResults);
-			}
-			return results;
-		}
-		return new HashSet<>();
-	}
-
-
-	private static List<List<String>> parseSubSystem(SubSystem subSystem) {
-		// 处理循环结构 太难了！！！
-		// removeLoop(subSystem);
-
-		// dfs 遍历整个有向无环图
-		List<List<String>> allPath = findAllPath(subSystem.startNode, subSystem.endNode);
-		return allPath;
-	}
-
-	private static List<List<String>> findAllPath(String startNode, String endNode) {
-		List<List<String>> result = new ArrayList<>();
-		findAllPathDfs(startNode,endNode,new ArrayList<>(), result);
-		return result;
-	}
-
-	private static void findAllPathDfs(String currentNode, String endNode,List<List<String>> before, List<List<String>> result) {
-		Node node = nameNodeMap.get(currentNode);
-
-		before = pathAppend(before, node.path);
-		if (currentNode.equals(endNode)){ // 当前节点为终止节点
-			result.addAll(before);
-		}else {
-			Set<String> outNodes = connectMap.get(currentNode);
-			for (String outNode: outNodes){
-				findAllPathDfs(outNode, endNode, before, result);
-			}
-		}
-	}
-
-	private static void removeLoop(SubSystem subSystem) {
-		// 遍历所有的点看这个点是否是循环点
-		for (Node node: nameNodeMap.values()){
-			if (node.type == NodeType.PLACE){
-				// 如果 place只有一个入度 肯定不是循环
-				int inPathNum = (int) connectMap.values().stream().filter(set-> set.contains(node.id)).count();
-				if (inPathNum == 0){
+		for (int i=0;i<currentState.length;i++){
+			// 当前这个place有令牌
+			if (currentState[i]){
+				String currentPalceName = nodeNames[i];
+				Set<String> nextTransitions = connectMap.get(currentPalceName);
+				if (nextTransitions==null){
 					continue;
 				}
-				List<List<String>> result = new ArrayList<>();
-				findLoopPath(node.id, result, subSystem);
+				loop:for (String nextTransition: nextTransitions){
+					// 查看是否能进行下一个状态
+					boolean[] nextState = currentState.clone();
+					Set<String> beforePlaces = beConnectMap.get(nextTransition);
+					if (!beforePlaces.isEmpty()){
+						for (String placeName:beforePlaces){
+							if (!currentState[nameIndexMap.get(placeName)]){
+								continue loop;
+							}else {
+								nextState[nameIndexMap.get(placeName)] = false;
+							}
+						}
+					}
+
+					Set<String> nextPlaces = connectMap.get(nextTransition);
+					// 并行结构
+					if (nextPlaces.size()>1){
+						for (String nextPlace:nextPlaces){
+							nextState[nameIndexMap.get(nextPlace)]=true;
+						}
+						dfs(nextState, visitedPath+" "+nameNodeMap.get(nextTransition).name);
+					}else { // 正常结构
+						nextState[nameIndexMap.get(nextPlaces.iterator().next())]=true;
+						dfs(nextState, visitedPath+" "+nameNodeMap.get(nextTransition).name);
+					}
+				}
 			}
 		}
 	}
 
-	private static void findLoopPath(String palceId, List<List<String>> result, SubSystem subSystem) {
-		Set<String> ids = connectMap.get(palceId);
 
-		//LoopPlaceResult loopPlaceResult = loopPathDfs(palceId,palceId subSystem.endNode, new HashSet<String>());
-	}
-
-//	private static LoopPlaceResult loopPathDfs(String id, String startId, String endNode, HashSet<String> visitedPlace) {
-//		Set<String> nextNodes = connectMap.get(id);
-//		for (String nextNode: nextNodes){
-//			Node node = nameNodeMap.get(nextNode);
-//
-//		}
-//	}
-
-	private static SubSystem parseFile(String modelFile) {
+	private static void parseFile(String modelFile) {
 		try {
 			File file = new File(modelFile);
 			if (!file.exists()){
@@ -238,122 +144,40 @@ public class Solution {
 				}else {
 					connectMap.put(source, Stream.of(target).collect(Collectors.toSet()));
 				}
+				if (beConnectMap.containsKey(target)){
+					beConnectMap.get(target).add(source);
+				}else {
+					beConnectMap.put(target, Stream.of(source).collect(Collectors.toSet()));
+				}
 
 				inNodeSet.add(source);
 				outNodeSet.add(target);
 			}
-			SubSystem subSystem = new SubSystem();
+			String endNode = null;
+			String startNode = null;
 			for (String nodeId: nameNodeMap.keySet()){
 				if (!inNodeSet.contains(nodeId)){
-					subSystem.endNode = nodeId;
+					endNode = nodeId;
 				}else if (!outNodeSet.contains(nodeId)){
-					subSystem.startNode = nodeId;
+					startNode = nodeId;
 				}
 			}
-			return subSystem;
+
+			List<String> transitionNodeNames = nameNodeMap.values().stream().filter(i -> i.type == NodeType.PLACE).map(i -> i.id).collect(Collectors.toList());
+			int transitionNum = transitionNodeNames.size();
+			nodeNames = new String[transitionNum];
+			for (int i =0;i<transitionNodeNames.size();i++){
+				nameIndexMap.put(transitionNodeNames.get(i), i);
+				nodeNames[i] = transitionNodeNames.get(i);
+			}
+
+			start = new boolean[transitionNum];
+			start[nameIndexMap.get(startNode)] = true;
+			end = new boolean[transitionNum];
+			end[nameIndexMap.get(endNode)] = true;
 
 		} catch (DocumentException | FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		return null;
-	}
-
-	// 两个路径进行拼接
-	private static List<List<String>> pathAppend(List<List<String>> path1, List<List<String>> path2){
-		if (path1 == null|| path1.size()==0){
-			return path2;
-		}
-		if (path2 == null|| path2.size()==0){
-			return path1;
-		}
-
-		List<List<String>> tmp = new ArrayList<>();
-		for (List<String> beforePath: path1){
-			for (List<String> currentPath: path2){
-				List<String> newPath = new ArrayList<>();
-				newPath.addAll(beforePath);
-				newPath.addAll(currentPath);
-				tmp.add(newPath);
-			}
-		}
-		return tmp;
-	}
-
-	// 两个路径并行
-	private static List<List<String>> pathParallel(List<List<String>> path1, List<List<String>> path2){
-		if (path1 == null|| path1.size()==0){
-			return path2;
-		}
-		if (path2 == null|| path2.size()==0){
-			return path1;
-		}
-		List<List<String>> result = new ArrayList<>();
-		for (List<String> pathA: path1){
-			for (List<String> pathB: path2){
-				// 求C(a,a+b)的全部情况
-				int a = pathA.size();
-				int b = pathB.size();
-				List<String> shortPath;
-				List<String> longPath;
-				if (a>b){
-					longPath = pathA;
-					shortPath = pathB;
-				}else {
-					longPath = pathB;
-					shortPath = pathA;
-				}
-
-				List<List<Integer>> indexList = caculateIndex(Math.min(a, b), 0, a + b - 1);
-				for (List<Integer> index: indexList){
-					String[] tmp = new String[a+b];
-					int longPathIndex = 0;
-					int shortPathIndex = 0;
-					int indexCurrent = 0;
-					for (int i =0;i<a+b;i++){
-						if (longPathIndex<longPath.size()&&i == index.get(indexCurrent)){
-							tmp[i] = longPath.get(longPathIndex);
-							indexCurrent++;
-							longPathIndex++;
-						}else {
-							tmp[i] = shortPath.get(shortPathIndex);
-							shortPathIndex++;
-						}
-					}
-					result.add(Stream.of(tmp).collect(Collectors.toList()));
-				}
-
-			}
-		}
-		return result;
-	}
-
-	//计算 C(a,b)的情况
-	private static List<List<Integer>> caculateIndex(int n, int start, int end){
-		List<List<Integer>> result = new ArrayList<>();
-		if (n == 1){
-			for (int i=start;i<=end;i++){
-				ArrayList<Integer> tmp = new ArrayList<>();
-				tmp.add(i);
-				result.add(tmp);
-			}
-			return result;
-		}
-
-		if (n >= end-start+1){
-			ArrayList<Integer> tmp = new ArrayList<>();
-			for (int i=start;i<=end;i++){
-				tmp.add(i);
-			}
-			return result;
-		}
-
-		for (int i = start ;i<=end-n+1;i++){
-			List<List<Integer>> subResult = caculateIndex(n-1,i+1, end);
-			for (List<Integer> sub:subResult){
-				sub.add(0,i);
-				result.add(sub);
-			}
-		}
-		return result;
 	}
 }

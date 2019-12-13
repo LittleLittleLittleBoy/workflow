@@ -56,19 +56,25 @@ public class Solution {
 	private static boolean[] end;
 
 	public static void main(String[] args) {
-		getLogOfModel("/Users/liweimin/Documents/code/workflow/src/main/resources/Model3.pnml", "");
+		getLogOfModel("/Users/liweimin/Documents/code/workflow/src/main/resources/Model11.pnml", "");
 	}
 
 
 	public static void getLogOfModel(String modelFile, String logFile){
 		// 解析文件
 		parseFile(modelFile);
-		dfs(start,"");
+		dfs(start,"",new HashSet<String>());
 		finalPath.forEach(i-> System.out.println(i));
 		System.out.println(finalPath.size());
 	}
 
-	public static void dfs(boolean[] currentState, String visitedPath){
+	/**
+	 *
+	 * @param currentState
+	 * @param visitedPath
+	 * @param visitedConnectedLine 经历过的place 与transition 之间的连线
+	 */
+	public static void dfs(boolean[] currentState, String visitedPath, HashSet<String> visitedConnectedLine){
 		if (Arrays.equals(currentState, end)){
 			finalPath.add(visitedPath);
 			return;
@@ -80,6 +86,10 @@ public class Solution {
 				Set<String> nextTransitions = connectMap.get(currentPalceName);
 				if (nextTransitions==null){
 					continue;
+				}
+				boolean onLoopChoose = false;
+				if (nextTransitions.size()>1){
+					onLoopChoose = true;
 				}
 				loop:for (String nextTransition: nextTransitions){
 					// 查看是否能进行下一个状态
@@ -101,16 +111,40 @@ public class Solution {
 						for (String nextPlace:nextPlaces){
 							nextState[nameIndexMap.get(nextPlace)]=true;
 						}
-						dfs(nextState, visitedPath+" "+nameNodeMap.get(nextTransition).name);
+						String statusChange = nextTransition+"#"+getStatus(currentState);
+						if (onLoopChoose&&visitedConnectedLine.contains(statusChange)){
+							continue loop;
+						}
+						visitedConnectedLine.add(statusChange);
+						dfs(nextState, visitedPath+" "+nameNodeMap.get(nextTransition).name, visitedConnectedLine);
+						visitedConnectedLine.remove(statusChange);
 					}else { // 正常结构
+
 						nextState[nameIndexMap.get(nextPlaces.iterator().next())]=true;
-						dfs(nextState, visitedPath+" "+nameNodeMap.get(nextTransition).name);
+
+						String statusChange = nextTransition+"#"+getStatus(currentState);
+						if (onLoopChoose&&visitedConnectedLine.contains(statusChange)){
+							continue loop;
+						}
+						visitedConnectedLine.add(statusChange);
+						dfs(nextState, visitedPath+" "+nameNodeMap.get(nextTransition).name, visitedConnectedLine);
+						visitedConnectedLine.remove(statusChange);
 					}
 				}
 			}
 		}
 	}
-
+	public static String getStatus(boolean[] status){
+		StringBuilder stringBuilder = new StringBuilder();
+		for (int i=0;i<status.length;i++){
+			if (status[i]){
+				stringBuilder.append(1);
+			}else {
+				stringBuilder.append(0);
+			}
+		}
+		return stringBuilder.toString();
+	}
 
 	private static void parseFile(String modelFile) {
 		try {

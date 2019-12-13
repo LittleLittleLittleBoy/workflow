@@ -129,7 +129,7 @@ class PetriNet:
 
 
 if __name__ == '__main__':
-    file = '/Users/loick/Documents/研一/高级算法/结课作业/附件1/Model2.pnml'
+    file = '/Users/liweimin/Documents/code/workflow/src/main/resources/Model2.pnml'
     net = PetriNet(file)
     net.get_all_path()
 

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<pnml>
+<net id="workflownet" type="http://www.informatik.hu-berlin.de/top/pnml/basicPNML.rng">
+    <place id="place_0">
+        <name>
+            <text>p0</text>
+         </name>
+    </place>
+    <place id="place_1">
+        <name>
+            <text>p1</text>
+         </name>
+    </place>
+    <place id="place_2">
+        <name>
+            <text>p2</text>
+         </name>
+    </place>
+    <place id="place_3">
+        <name>
+            <text>p4</text>
+         </name>
+    </place>
+    <place id="place_4">
+        <name>
+            <text>p5</text>
+         </name>
+    </place>
+    <transition id="trans_0">
+        <name>
+            <text>A</text>
+         </name>
+    </transition>
+    <transition id="trans_1">
+        <name>
+            <text>B</text>
+         </name>
+    </transition>
+    <transition id="trans_2">
+        <name>
+            <text>C</text>
+         </name>
+    </transition>
+    <transition id="trans_3">
+        <name>
+            <text>D</text>
+         </name>
+    </transition>
+    <transition id="trans_4">
+        <name>
+            <text>E</text>
+         </name>
+    </transition>
+    <arc id="arc_0" source="place_0" target="trans_0"></arc>
+    <arc id="arc_0" source="trans_0" target="place_1"></arc>
+    <arc id="arc_0" source="place_1" target="trans_1"></arc>
+    <arc id="arc_0" source="trans_1" target="place_2"></arc>
+    <arc id="arc_0" source="trans_0" target="place_3"></arc>
+    <arc id="arc_0" source="place_3" target="trans_2"></arc>
+    <arc id="arc_0" source="trans_2" target="place_4"></arc>
+    <arc id="arc_0" source="place_4" target="trans_1"></arc>
+    <arc id="arc_0" source="place_4" target="trans_3"></arc>
+    <arc id="arc_0" source="trans_3" target="place_3"></arc>
+
+
+</net>
+</pnml>

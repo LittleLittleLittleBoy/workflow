@@ -21,11 +21,6 @@
             <text>p4</text>
          </name>
     </place>
-    <place id="place_4">
-        <name>
-            <text>p5</text>
-         </name>
-    </place>
     <transition id="trans_0">
         <name>
             <text>A</text>
@@ -46,17 +41,22 @@
             <text>D</text>
          </name>
     </transition>
+    <transition id="trans_4">
+        <name>
+            <text>E</text>
+         </name>
+    </transition>
     <arc id="arc_0" source="place_0" target="trans_0"></arc>
     <arc id="arc_0" source="trans_0" target="place_1"></arc>
     <arc id="arc_0" source="place_1" target="trans_1"></arc>
+    <arc id="arc_0" source="place_1" target="trans_4"></arc>
+    <arc id="arc_0" source="trans_4" target="place_2"></arc>
     <arc id="arc_0" source="trans_1" target="place_2"></arc>
-    <arc id="arc_0" source="trans_0" target="place_3"></arc>
-    <arc id="arc_0" source="place_3" target="trans_2"></arc>
-    <arc id="arc_0" source="trans_2" target="place_4"></arc>
-    <arc id="arc_0" source="place_4" target="trans_1"></arc>
-    <arc id="arc_0" source="place_4" target="trans_3"></arc>
-    <arc id="arc_0" source="trans_3" target="place_3"></arc>
+    <arc id="arc_0" source="place_2" target="trans_2"></arc>
+    <arc id="arc_0" source="trans_2" target="place_3"></arc>
 
+    <arc id="arc_0" source="place_2" target="trans_3"></arc>
+    <arc id="arc_0" source="trans_3" target="place_1"></arc>
 
 </net>
 </pnml>

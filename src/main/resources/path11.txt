@@ -1,0 +1,4 @@
+A E D B C
+A B C
+A B D E C
+A E C

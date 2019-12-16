@@ -7,6 +7,8 @@ import org.dom4j.io.SAXReader;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -56,16 +58,27 @@ public class Solution {
 	private static boolean[] end;
 
 	public static void main(String[] args) {
-		getLogOfModel("/Users/liweimin/Documents/code/workflow/src/main/resources/Model2.pnml", "");
+		getLogOfModel("/Users/liweimin/Documents/code/workflow/src/main/resources/Model12.pnml", "/Users/liweimin/Documents/code/workflow/src/main/resources/path12.txt");
 	}
 
 
 	public static void getLogOfModel(String modelFile, String logFile){
 		// 解析文件
 		parseFile(modelFile);
-		dfs(start,"",new HashSet<String>(), new HashMap<String,String>());
-		finalPath.forEach(i-> System.out.println(i));
+		dfs(start,"",new HashSet<String>());
+		writeFile(logFile);
 		System.out.println(finalPath.size());
+	}
+
+	private static void writeFile(String logFile) {
+
+		try (FileWriter fileWriter = new FileWriter(logFile)){
+			for (String path:finalPath){
+				fileWriter.write(path+"\n");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -73,7 +86,7 @@ public class Solution {
 	 * @param visitedPath
 	 * @param visitedConnectedLine 经历过的place 与transition 之间的连线
 	 */
-	public static void dfs(boolean[] currentState, String visitedPath, HashSet<String> visitedConnectedLine, HashMap<String, String> fromTransitionMap){
+	public static void dfs(boolean[] currentState, String visitedPath, HashSet<String> visitedConnectedLine){
 		if (Arrays.equals(currentState, end)){
 			finalPath.add(visitedPath.substring(1));
 			return;
@@ -116,7 +129,7 @@ public class Solution {
 							continue loop;
 						}
 						visitedConnectedLine.add(statusChange);
-						dfs(nextState, visitedPath+" "+nameNodeMap.get(nextTransition).name, visitedConnectedLine, fromTransitionMap);
+						dfs(nextState, visitedPath+" "+nameNodeMap.get(nextTransition).name, visitedConnectedLine);
 						visitedConnectedLine.remove(statusChange);
 					}else { // 正常结构
 						int nextPlaceIndex = nameIndexMap.get(nextPlaces.iterator().next());
@@ -127,7 +140,7 @@ public class Solution {
 							continue loop;
 						}
 						visitedConnectedLine.add(statusChange);
-						dfs(nextState, visitedPath+" "+nameNodeMap.get(nextTransition).name, visitedConnectedLine, fromTransitionMap);
+						dfs(nextState, visitedPath+" "+nameNodeMap.get(nextTransition).name, visitedConnectedLine);
 						visitedConnectedLine.remove(statusChange);
 					}
 				}

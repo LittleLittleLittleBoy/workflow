@@ -58,7 +58,7 @@ public class Solution {
 	private static boolean[] end;
 
 	public static void main(String[] args) {
-		getLogOfModel("/Users/liweimin/Documents/code/workflow/src/main/resources/Model12.pnml", "/Users/liweimin/Documents/code/workflow/src/main/resources/path12.txt");
+		getLogOfModel("/Users/liweimin/Documents/code/workflow/src/main/resources/Model13.pnml", "/Users/liweimin/Documents/code/workflow/src/main/resources/path13.txt");
 	}
 
 

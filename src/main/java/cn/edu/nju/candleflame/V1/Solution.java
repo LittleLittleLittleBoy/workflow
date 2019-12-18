@@ -82,11 +82,12 @@ public class Solution {
 	}
 
 	/**
-	 *  @param currentState
-	 * @param visitedPath
+	 * @param currentState 当前的palce 令牌分布状态
+	 * @param visitedPath 当前路径已经遍历过的Transition 路径记录
 	 * @param visitedConnectedLine 经历过的place 与transition 之间的连线
 	 */
 	public static void dfs(boolean[] currentState, String visitedPath, HashSet<String> visitedConnectedLine){
+		// 已经到达终点状态
 		if (Arrays.equals(currentState, end)){
 			finalPath.add(visitedPath.substring(1));
 			return;
@@ -104,7 +105,7 @@ public class Solution {
 					onLoopChoose = true;
 				}
 				loop:for (String nextTransition: nextTransitions){
-					// 查看是否能进行下一个状态
+					// 查看是否能进行下一个状态(针对并行结构出口情况，判断是否所有的place都包含token。如果没有，表示并不满足发生变迁的条件，跳过当前路径)
 					boolean[] nextState = currentState.clone();
 					Set<String> beforePlaces = beConnectMap.get(nextTransition);
 					if (!beforePlaces.isEmpty()){
@@ -124,6 +125,7 @@ public class Solution {
 							nextState[nameIndexMap.get(nextPlace)]=true;
 						}
 
+						// 判断循环结构是否存在过：根据 （下一个place_当前place转换为下一个place所需要经过的Transition名称)来保证循环结构只有一个
 						String statusChange = nextTransition+"_"+currentPalceName;;
 						if (onLoopChoose&&visitedConnectedLine.contains(statusChange)){
 							continue loop;

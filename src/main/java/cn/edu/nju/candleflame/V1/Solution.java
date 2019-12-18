@@ -57,8 +57,10 @@ public class Solution {
 	// 结束状态
 	private static boolean[] end;
 
+	private static String endPalceId;
+
 	public static void main(String[] args) {
-		getLogOfModel("/Users/liweimin/Documents/code/workflow/src/main/resources/Model13.pnml", "/Users/liweimin/Documents/code/workflow/src/main/resources/path13.txt");
+		getLogOfModel("/Users/liweimin/Documents/code/workflow/src/main/resources/Model1.pnml", "/Users/liweimin/Documents/code/workflow/src/main/resources/path1.txt");
 	}
 
 
@@ -119,35 +121,67 @@ public class Solution {
 					}
 
 					Set<String> nextPlaces = connectMap.get(nextTransition);
-					// 并行结构
+					// 并行结构,令牌由一个变为多个
 					if (nextPlaces.size()>1){
 						for (String nextPlace:nextPlaces){
 							nextState[nameIndexMap.get(nextPlace)]=true;
 						}
 
-						// 判断循环结构是否存在过：根据 （下一个place_当前place转换为下一个place所需要经过的Transition名称)来保证循环结构只有一个
-						String statusChange = nextTransition+"_"+currentPalceName;;
-						if (onLoopChoose&&visitedConnectedLine.contains(statusChange)){
+						// 判断循环结构是否存在过：根据 （下一个place所需要经过的Transition名称)来保证循环结构只有一个
+						if (onLoopChoose&&visitedConnectedLine.contains(nextTransition)){
 							continue loop;
 						}
-						visitedConnectedLine.add(statusChange);
+						visitedConnectedLine.add(nextTransition);
 						dfs(nextState, visitedPath+" "+nameNodeMap.get(nextTransition).name, visitedConnectedLine);
-						visitedConnectedLine.remove(statusChange);
+						visitedConnectedLine.remove(nextTransition);
 					}else { // 正常结构
 						int nextPlaceIndex = nameIndexMap.get(nextPlaces.iterator().next());
 						nextState[nextPlaceIndex]=true;
 
-						String statusChange = nextTransition+"_"+currentPalceName;;
-						if (onLoopChoose&&visitedConnectedLine.contains(statusChange)){
+						if (onLoopChoose&&visitedConnectedLine.contains(nextTransition)){
 							continue loop;
 						}
-						visitedConnectedLine.add(statusChange);
+						visitedConnectedLine.add(nextTransition);
 						dfs(nextState, visitedPath+" "+nameNodeMap.get(nextTransition).name, visitedConnectedLine);
-						visitedConnectedLine.remove(statusChange);
+						visitedConnectedLine.remove(nextTransition);
 					}
 				}
 			}
 		}
+	}
+
+	private static boolean bfs(String currentPalceName) {
+		Set<String> allPaths = connectMap.get(currentPalceName);
+		boolean[] results = new boolean[allPaths.size()];
+		int index=0;
+		for (String path:allPaths){
+			Queue<String> queue = new ArrayDeque<>();
+			HashSet<String> visited = new HashSet<>();
+			queue.offer(path);
+			boolean result =false;
+			while (queue.size()!=0){
+				Set<String> nextIds = connectMap.get(queue.poll());
+				for (String nextId: nextIds){
+					if (nextId.equals(endPalceId)){
+						result=true;
+						break;
+					}
+					if (visited.contains(nextId)){
+						continue;
+					}
+					visited.add(nextId);
+					queue.add(nextId);
+				}
+			}
+
+			results[index]=result;
+			index++;
+		}
+		boolean finalResult = true;
+		for (boolean tmp:results){
+			finalResult &= tmp;
+		}
+		return !finalResult;
 	}
 
 	private static void parseFile(String modelFile) {
@@ -213,6 +247,8 @@ public class Solution {
 			start[nameIndexMap.get(startNode)] = true;
 			end = new boolean[transitionNum];
 			end[nameIndexMap.get(endNode)] = true;
+
+			endPalceId = endNode;
 
 		} catch (DocumentException | FileNotFoundException e) {
 			e.printStackTrace();

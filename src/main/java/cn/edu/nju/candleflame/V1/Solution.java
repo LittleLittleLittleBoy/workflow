@@ -57,10 +57,9 @@ public class Solution {
 	// 结束状态
 	private static boolean[] end;
 
-	private static String endPalceId;
 
 	public static void main(String[] args) {
-		getLogOfModel("/Users/liweimin/Documents/code/workflow/src/main/resources/Model1.pnml", "/Users/liweimin/Documents/code/workflow/src/main/resources/path1.txt");
+		getLogOfModel("/Users/liweimin/Documents/code/workflow/src/main/resources/Model14.pnml", "/Users/liweimin/Documents/code/workflow/src/main/resources/path.txt");
 	}
 
 
@@ -150,39 +149,6 @@ public class Solution {
 		}
 	}
 
-	private static boolean bfs(String currentPalceName) {
-		Set<String> allPaths = connectMap.get(currentPalceName);
-		boolean[] results = new boolean[allPaths.size()];
-		int index=0;
-		for (String path:allPaths){
-			Queue<String> queue = new ArrayDeque<>();
-			HashSet<String> visited = new HashSet<>();
-			queue.offer(path);
-			boolean result =false;
-			while (queue.size()!=0){
-				Set<String> nextIds = connectMap.get(queue.poll());
-				for (String nextId: nextIds){
-					if (nextId.equals(endPalceId)){
-						result=true;
-						break;
-					}
-					if (visited.contains(nextId)){
-						continue;
-					}
-					visited.add(nextId);
-					queue.add(nextId);
-				}
-			}
-
-			results[index]=result;
-			index++;
-		}
-		boolean finalResult = true;
-		for (boolean tmp:results){
-			finalResult &= tmp;
-		}
-		return !finalResult;
-	}
 
 	private static void parseFile(String modelFile) {
 		try {
@@ -248,7 +214,6 @@ public class Solution {
 			end = new boolean[transitionNum];
 			end[nameIndexMap.get(endNode)] = true;
 
-			endPalceId = endNode;
 
 		} catch (DocumentException | FileNotFoundException e) {
 			e.printStackTrace();
